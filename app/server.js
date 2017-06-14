@@ -1,14 +1,19 @@
-'use strict'
+'use strict';
+
 const http  = require('http');
 const Koa = require('koa');
 const render = require('koa-ejs');
 const Router =  require('koa-router');
 
-var app = new Koa();
-var router = new Router();
-var path = require('path')
+let app = new Koa();
+let router = new Router();
+let path = require('path');
+let dirName = __dirname;
+
+dirName = dirName.replace("app","");
+
 render(app, {
-    root: path.join("C:/Users/Administrator/Desktop/playlist-store/", 'view'),
+    root: path.join(dirName, 'view'),
     layout: 'template',
     viewExt: 'html',
     cache: false,
@@ -22,4 +27,4 @@ router.get('/home',async function(ctx) {
 });
 
 app.use(router.routes());
-app.listen(7777);
+module.exports = app;
