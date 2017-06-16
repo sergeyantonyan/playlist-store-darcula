@@ -1,0 +1,36 @@
+*{
+    margin: 0;
+    padding: 0;
+}
+.main_header{
+    background-color: #add8e6;
+}
+.head{
+    align-items: center;
+    justify-content: center;
+}
+.head .logo{
+    display: inline-block;
+}
+.head nav {
+    display: inline-block;
+    align-items: center;
+    justify-content: center;
+}
+.head nav ul li{
+    padding-right: 10px;
+    display: inline-block;
+}
+.head nav ul li a{
+    color: darkgreen;
+    font-size: 16px;
+    font-weight: 900;
+    font-family: 'Pangolin', cursive;
+    text-decoration: none;
+}
+.head nav ul li a:hover{
+    text-decoration: underline;
+}
+.head nav ul li:last-child{
+    padding-right: 0;
+}
