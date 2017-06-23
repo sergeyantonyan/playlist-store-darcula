@@ -7,6 +7,11 @@ const path = require('path');
 
 let app = new Koa();
 
+// authentication
+const passport = require('./auth');
+app.use(passport.initialize());
+app.use(passport.session());
+
 const router = require("./router");
 
 app.use(serve(path.join(__dirname, '../assets')));
@@ -19,6 +24,42 @@ render(app, {
     debug: true
 });
 
+
+// routes
+/*
+
+app.use(route.post('/custom', function(ctx, next) {
+    return passport.authenticate('local', function(err, user, info, status) {
+        if (user === false) {
+            ctx.body = { success: false }
+            ctx.throw(401)
+        } else {
+            ctx.body = { success: true }
+            return ctx.login(user)
+        }
+    })(ctx, next)
+}))
+*/
+
+/*
+// POST /login
+app.use(route.post('/login',
+    passport.authenticate('local', {
+        successRedirect: '/app',
+        failureRedirect: '/'
+    })
+))
+*/
+
 app.use(router.routes());
+
+// Require authentication for now
+app.use(function(ctx, next) {
+    if (ctx.isAuthenticated()) {
+        return next()
+    } else {
+        ctx.redirect('/main')
+    }
+})
 
 module.exports = app;
