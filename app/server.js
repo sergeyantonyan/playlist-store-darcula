@@ -2,10 +2,15 @@
 
 const Koa = require('koa');
 const render = require('koa-ejs');
+const session = require('koa-session');
 const serve = require('koa-static');
 const path = require('path');
 
 let app = new Koa();
+
+app.keys = ['some secret hurr'];
+
+app.use(session(app));
 
 // authentication
 const passport = require('./auth');

@@ -1,7 +1,8 @@
 'use strict';
 
 const passport = require('koa-passport');
-const config = require("../config/config.js")
+const config = require("../config/config.js");
+
 passport.serializeUser(function (user, done) {
   done(null, user);
 });
@@ -16,9 +17,17 @@ passport.use(new GoogleStrategy({
     clientSecret: config.google.clientSecret,
     callbackURL: config.google.callbackURL
   },
-  function (token, tokenSecret, profile, done) {
-    console.log(profile.displayName);
-    done(null, profile);
+  function (accessToken, refreshToken, profile, done) {
+
+    const user = {
+        name: profile.displayName,
+        accessToken: accessToken,
+        refreshToken: refreshToken,
+        id: profile.id
+    }
+
+    console.log(profile.id);
+    done(null, user);
   }
 ));
 
