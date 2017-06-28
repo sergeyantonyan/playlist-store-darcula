@@ -1,7 +1,11 @@
 const Router =  require('koa-router');
 const passport = require('./auth');
 const config = require('../config/config');
+const Koa = require('koa');
+const YoutubeAPI = require('./youtube.js');
+
 let router = new Router();
+let app = new Koa();
 
 router.get('/', async function(ctx) {
     await ctx.render("main", {});
@@ -17,6 +21,8 @@ router.get('/create-playlist', async function(ctx) {
 
 router.get('/playlist', async function(ctx) {
     await ctx.render("list", {});
+
+    var yapi = new YoutubeAPI(config.google.clientID, config.google.clientSecret, config.google.callbackURL, ctx.state.user.accessToken, ctx.state.user.refresh_token);
 });
 
 router.get('/payment', async function(ctx) {
@@ -24,7 +30,7 @@ router.get('/payment', async function(ctx) {
 });
 
 router.get('/logout', function(ctx) {
-    ctx.logout()
+    ctx.logout();
     ctx.redirect('/')
 });
 
