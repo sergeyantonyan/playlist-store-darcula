@@ -20,9 +20,17 @@ router.get('/create-playlist', async function(ctx) {
 });
 
 router.get('/playlist', async function(ctx) {
-    await ctx.render("list", {});
-
     var yapi = new YoutubeAPI(config.google.clientID, config.google.clientSecret, config.google.callbackURL, ctx.state.user.accessToken, ctx.state.user.refresh_token);
+    // var videoArray = [];
+    const playlists = await yapi.getPlaylists();
+    /*for(i=0; i < playlists.items.length; i++){
+      console.log(playlists.items[i]);
+      //videoArray[i] =
+    }*/
+
+    const data = await yapi.getPlaylistItems(playlists.items[0].id);
+
+    await ctx.render("list", {items:data.items});
 });
 
 router.get('/payment', async function(ctx) {
