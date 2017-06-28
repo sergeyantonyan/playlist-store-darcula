@@ -34,7 +34,7 @@ var YoutubeAPI = function (clientID, clientSecret, redirectURL, accsesToken, ref
           return reject(err)
         }
 
-       // console.log(data.items);
+        // console.log(data.items);
         return resolve(data)
       });
     })
@@ -46,7 +46,7 @@ var YoutubeAPI = function (clientID, clientSecret, redirectURL, accsesToken, ref
         part: 'snippet, contentDetails',
         playlistId: playlistId
         //mine: true
-      },(err, data) => {
+      }, (err, data) => {
         if (err) {
           console.error('Error: ' + err);
           return reject(err);
@@ -56,6 +56,30 @@ var YoutubeAPI = function (clientID, clientSecret, redirectURL, accsesToken, ref
           return resolve(data);
         }
       })
+    })
+  };
+  this.insertPlaylist = function () {
+    return new Promise((resolve, reject) => {
+      this.youtube.playlists.insert({
+        part: 'snippet,status',
+        resource: {
+          snippet: {
+            title: 'pll',
+            description: 'playlist -- playlist'
+          },
+          status: {
+            privacyStatus: 'private'
+          }
+        }
+      }, (err, data) => {
+        if (err) {
+          console.error('Get playlist insert error: ' + err);
+          return reject(err)
+        }
+
+        // console.log(data.items);
+        return resolve(data)
+      });
     })
   };
 };
