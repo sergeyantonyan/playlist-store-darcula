@@ -2,20 +2,32 @@
 <p class="d-flex justify-content-center">If you like to listen to music you are in the rigth place!!</p>
 
 <div id="playlistContainer">
-    <% for(i = 0;i < items.length; i++) { %>
-    <div>
-        <img src= <%= items[0].snippet.thumbnails.high.url %> alt="">
-        <h3>playlistName</h3>
-        <p>ownerName</p>
-        <p>description</p>
-        <ul>
+    <% for(i = 0;i < playlists.length; i++) { %>
+    <div class="id<%=i%>" data-id=<%= playlists[i].id %> >
+        <!--<img src= <%= playlists[i].snippet.thumbnails.default.url %> alt="">-->
+        <b><%= playlists[i].snippet.title %></b>
+        <span><%= playlists[i].snippet.channelTitle %></span>
+        <!--<span><%= playlists[i].snippet.description %></span>-->
+        <!--<ul>
+            <% for(j = 0;j < playlists[i].contentDetails.itemCount; j++) { %>
             <li>
                 <div>
-                    <img src="https://i.ytimg.com/vi/1TsVjvEkc4s/default.jpg" alt="">
-                    <p>songName</p>
+                    <img src= <%= items[j].snippet.thumbnails.default.url %> alt="">
+                    <p><%= items[j].snippet.title %></p>
                 </div>
             </li>
-        </ul>
+            <% } %>
+        </ul>-->
+        <button class="import" data-id="<%=i%>">Import</button>
     </div>
     <% } %>
 </div>
+<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+<script>
+    $(".import").each(function(){
+      $(this).on("click",function(e){
+        e.preventDefault();
+       console.log($(".id"+$(this).data("id")).data("id"));
+      })
+    })
+</script>

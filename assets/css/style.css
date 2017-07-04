@@ -37,15 +37,12 @@
 .signBlock div{
     color: #3687F3;
     background-color: lightblue;
-    width: 700px;
-    height: 700px;
     margin-top: 100px;
     border-radius: 50%;
 }
 .signBlock div p{
     text-align: center;
     transform: translateY(300px);
-    font-size: 40px;
     color: #000;
 }
 .signBlock a{
