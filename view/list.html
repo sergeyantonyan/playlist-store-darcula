@@ -1,12 +1,13 @@
 <h1>List Page</h1>
 <p class="d-flex justify-content-center">If you like to listen to music you are in the rigth place!!</p>
-
+<a href="/logout">Logout</a>
 <div id="playlistContainer">
     <% for(i = 0;i < playlists.length; i++) { %>
-    <div class="id<%=i%>" data-id=<%= playlists[i].id %> >
-        <!--<img src= <%= playlists[i].snippet.thumbnails.default.url %> alt="">-->
+    <div>
         <b><%= playlists[i].snippet.title %></b>
-        <span><%= playlists[i].snippet.channelTitle %></span>
+        <span><%= playlists[i].snippet.description %></span>
+
+        <!--<img src= <%= playlists[i].snippet.thumbnails.default.url %> alt="">-->
         <!--<span><%= playlists[i].snippet.description %></span>-->
         <!--<ul>
             <% for(j = 0;j < playlists[i].contentDetails.itemCount; j++) { %>
@@ -18,6 +19,7 @@
             </li>
             <% } %>
         </ul>-->
+
         <button class="import" data-id="<%=i%>">Import</button>
     </div>
     <% } %>

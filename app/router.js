@@ -51,7 +51,7 @@ router.get('/auth/google',
   passport.authenticate('google', {
     scope: config.google.scope,
     accessType: config.google.accessType,
-    approvalPrompt: 'force'
+    approvalPrompt: config.google.approvalPrompt
   })
 );
 
