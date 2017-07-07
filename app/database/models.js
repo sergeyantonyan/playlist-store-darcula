@@ -31,7 +31,8 @@ const Playlist = sequelize.define('playlist', {
     type: Sequelize.ENUM('purchased', 'forSale', 'none'),
     defaultValue: 'none'
   },
-  origin_id: Sequelize.INTEGER,
+  origin_id: {type: Sequelize.STRING,
+              unique: true},
   owner_id: Sequelize.INTEGER,
   playlist_name: Sequelize.STRING,
   videos: Sequelize.TEXT,

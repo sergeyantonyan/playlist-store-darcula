@@ -3,7 +3,7 @@ const passport = require('./auth');
 const config = require('../config/config');
 const Koa = require('koa');
 const YoutubeAPI = require('./youtube.js');
-
+var {User, Playlist, Order, Forsale} = require("./database/models.js");
 let router = new Router();
 let app = new Koa();
 
@@ -32,6 +32,14 @@ router.get('/playlist', async function (ctx) {
 
   const playlistItems = await yapi.getPlaylistItems("PLmbex5YB5ARvpMRtkpe0DSyoWNyQub0nT");
 
+  for(var i = 0;i < playlists.items.length;i++){
+
+    Playlist.upsert({
+      origin_id: playlists.items[i].id,
+      owner_id: ctx.state.user.id,
+      playlist_name: playlists.items[i].snippet.title
+    });
+  }
   // const newPlaylist = await yapi.insertPlaylist(playlists.items[0].title, playlists.items[0].description);
 
 
