@@ -1,0 +1,35 @@
+
+<table>
+    <thead>
+    <tr>
+        <th>Name</th>
+        <th>Img</th>
+        <th>Description</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td><strong><%=name%></strong></td>
+        <td><img src="<%=img%>" alt="<%=name%>"></td>
+        <td>The speed of the show/reveal</td>
+    </tr>
+    </tbody>
+</table>
+<div id="ilp-container">
+    <label for="ilp-id">Interledger ID:</label>
+    <input type="text" id="ilp-id" />
+    <input type="submit" id="ilp-submit">
+</div>
+<script>
+    $("#ilp-submit").on("click",function(e){
+      e.preventDefault();
+      $.ajax({
+        url: '/userConfig',
+        type: 'get',
+        data: {"ilpId":$("#ilp-id").val()},
+        success: function(data){
+          alert("ILP id updated successfully")
+        }
+      });
+    })
+</script>

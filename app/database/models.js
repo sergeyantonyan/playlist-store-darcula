@@ -12,13 +12,14 @@ const User = sequelize.define('user', {
   displayName: Sequelize.STRING,
   accessToken: Sequelize.STRING,
   refreshToken: Sequelize.STRING,
-  tokenId: Sequelize.STRING,
+  idToken: Sequelize.STRING,
+  ilpId: Sequelize.STRING,
   gId: {
-    type: Sequelize.INTEGER,
+    type: Sequelize.STRING,
     unique: true
   },
-  lang: Sequelize.STRING
-
+  lang: Sequelize.STRING,
+  img: Sequelize.TEXT
 });
 
 const Playlist = sequelize.define('playlist', {
@@ -27,38 +28,53 @@ const Playlist = sequelize.define('playlist', {
     autoIncrement: true,
     primaryKey: true
   },
+  name: Sequelize.STRING,
+  videos: Sequelize.TEXT,
+  yId: {type: Sequelize.STRING,
+    unique: true},
+  originId: {type: Sequelize.INTEGER,
+    unique: true},
   status: {
     type: Sequelize.ENUM('purchased', 'forSale', 'none'),
     defaultValue: 'none'
   },
-  origin_id: {type: Sequelize.STRING,
-              unique: true},
-  owner_id: Sequelize.INTEGER,
-  playlist_name: Sequelize.STRING,
-  videos: Sequelize.TEXT,
 });
+
 const Forsale = sequelize.define('forSale', {
   id: {
     type: Sequelize.INTEGER,
     autoIncrement: true,
     primaryKey: true
   },
-  pl_id: Sequelize.INTEGER
 });
+
 const Order = sequelize.define("orders", {
   id: {
     type: Sequelize.INTEGER,
     autoIncrement: true,
     primaryKey: true
   },
-  userId: Sequelize.INTEGER,
-  playlistId: Sequelize.INTEGER,
   orderIp: Sequelize.INTEGER(15)
 });
 
+
+User.hasMany(Order, {foreignKey: 'userId'});
+User.hasMany(Playlist, {foreignKey: 'userId'});
+
+Playlist.hasOne(Forsale, {foreignKey: 'playlistId'});
+Playlist.hasMany(Order, {foreignKey: 'playlistId'});
+Playlist.belongsTo(User, {foreignKey: 'userId'});
+
+Forsale.belongsTo(Playlist, {foreignKey: 'playlistId'});
+
+Order.belongsTo(User, {foreignKey: 'userId'});
+Order.belongsTo(Playlist, {foreignKey: 'playlistId'});
+
 User.sync();
 Playlist.sync();
+Forsale.sync();
 Order.sync();
+
 module.exports = {
   User,
   Playlist,

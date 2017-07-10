@@ -4,12 +4,14 @@ const Koa = require('koa');
 const render = require('koa-ejs');
 const session = require('koa-session');
 const serve = require('koa-static');
+const bodyParser = require('koa-bodyparser');
 const path = require('path');
 
 let app = new Koa();
 
 app.keys = ['some secret hurr'];
 
+app.use(bodyParser());
 app.use(session(app));
 
 // authentication

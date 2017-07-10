@@ -5,33 +5,37 @@ const config = require("../config/config.js");
 var {User, Playlist, Order, Forsale} = require("./database/models.js");
 
 passport.serializeUser(function (user, done) {
-  done(null, user);
+  done(null, user.gId);
 });
 
-passport.deserializeUser(async function (user, done) {
+passport.deserializeUser(async function (gId, done) {
+  let user = await User.findOne({
+    where: {
+      gid: gId
+    }
+  });
+
   done(null, user)
 });
+
 passport.use(new GoogleStrategy({
     clientID: config.google.clientID,
     clientSecret: config.google.clientSecret,
     callbackURL: config.google.callbackURL
   },
-  function (accessToken, refreshToken, params, profile, done) {
-    const user = {
-      name: profile.displayName,
-      accessToken: accessToken,
-      refreshToken: refreshToken,
-      id: profile.id,
-      idToken: params.id_token
-    };
-    User.upsert({
+  async function (accessToken, refreshToken, params, profile, done) {
+    let user = {
       displayName: profile.displayName,
       accessToken: accessToken,
-      refreshToken: refreshToken,
-      tokenId: params.id_token,
+      idToken: params.id_token,
       gId: profile.id,
-      lang: profile._json.language
-    });
+      lang: profile._json.language,
+      img: profile.photos[0].value
+    };
+    if(refreshToken) {
+      user.refreshToken = refreshToken;
+    }
+    await User.upsert( user );
     done(null, user);
   }
 ));

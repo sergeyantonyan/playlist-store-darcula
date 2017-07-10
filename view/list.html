@@ -1,37 +1,61 @@
 <p class="d-flex justify-content-center">If you like to listen to music you are in the rigth place!!</p>
 <a href="/logout">Logout</a>
 <div class="container">
-    <h1 class="pl_name">My Playlists</h1>
-    <div id="playlistContainer">
-        <% for(i = 0;i < playlists.length; i++) { %>
-        <div class="playlist_block">
-            <b class="playlist_title"><%= playlists[i].snippet.title %></b>
-            <span class="playlist_desc"><%= playlists[i].snippet.description %></span>
+    <div id="myContainer">
+        <div id="playlistContainer">
+            <h2 class="pl_name"><b>My playlists</b></h2>
+            <% for(i = 0;i < playlists.length; i++) { %>
+            <div class="playlist_block">
+                <span class="playlist_title"><%= playlists[i].get('name') %></span>
 
-            <!--<img src= <%= playlists[i].snippet.thumbnails.default.url %> alt="">-->
-            <!--<span><%= playlists[i].snippet.description %></span>-->
-            <!--<ul>
-                <% for(j = 0;j < playlists[i].contentDetails.itemCount; j++) { %>
-                <li>
-                    <div>
-                        <img src= <%= items[j].snippet.thumbnails.default.url %> alt="">
-                        <p><%= items[j].snippet.title %></p>
-                    </div>
-                </li>
-                <% } %>
-            </ul>-->
+                <!--<img src=  playlists[i].snippet.thumbnails.default.url  alt="">
+                <span> playlists[i].snippet.description </span>
+                <ul>
+                    < for(j = 0;j < playlists[i].contentDetails.itemCount; j++) { >
+                    <li>
+                        <div>
+                            <img src= < items[j].snippet.thumbnails.default.url > alt="">
+                            <p>< items[j].snippet.title ></p>
+                        </div>
+                    </li>
+                    < } >
+                </ul>-->
 
-            <button class="btn draw-border">Import</button>
+                <button data-id="<%= playlists[i].get('id') %>" class="importBtn btn draw-border">Import</button>
+            </div>
+            <% } %>
         </div>
-        <% } %>
+        <div id="playlistContainer2">
+            <h2 class="pl_name"><b>Playlists for sale</b></h2>
+            <% for(i = 0;i < forSale.length; i++) { %>
+            <div class="playlist_block">
+                <span class="playlist_title"><%= forSale[i].get('name') %></span>
+                <button data-id="<%= forSale[i].get('id') %>" id="buy" class="buyBtn btn draw-border">Buy</button>
+            </div>
+            <% } %>
+        </div>
     </div>
 </div>
-<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
 <script>
-    $(".import").each(function(){
-      $(this).on("click",function(e){
-        e.preventDefault();
-       console.log($(".id"+$(this).data("id")).data("id"));
+  $(".importBtn").each(function () {
+    $(this).on("click", function (e) {
+      e.preventDefault();
+      $.ajax({
+        url: "/import",
+        type: "get",
+        data: {"playlistId": $(this).attr("data-id")}
       })
     })
+  });
+  $(".buyBtn").each(function () {
+    $(this).on("click", function (e) {
+      e.preventDefault();
+      $.ajax({
+        url: "/buy",
+        type: "get",
+        data: {"playlistId": $(this).attr("data-id")}
+      })
+    })
+  })
+
 </script>
