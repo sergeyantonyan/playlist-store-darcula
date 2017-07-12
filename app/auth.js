@@ -1,4 +1,5 @@
 'use strict';
+
 const passport = require('koa-passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const config = require("../config/config.js");
@@ -32,10 +33,10 @@ passport.use(new GoogleStrategy({
       lang: profile._json.language,
       img: profile.photos[0].value
     };
-    if(refreshToken) {
+    if (refreshToken) {
       user.refreshToken = refreshToken;
     }
-    await User.upsert( user );
+    await User.upsert(user);
     done(null, user);
   }
 ));

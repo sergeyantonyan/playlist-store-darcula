@@ -1,5 +1,8 @@
 <p class="d-flex justify-content-center">If you like to listen to music you are in the rigth place!!</p>
-<a href="/logout">Logout</a>
+<% if(isAuth) { %>
+<script>
+  $("#login-out").attr("href", "/logout").html("Logout");
+</script>
 <div class="container">
     <div id="myContainer">
         <div id="playlistContainer">
@@ -7,21 +10,13 @@
             <% for(i = 0;i < playlists.length; i++) { %>
             <div class="playlist_block">
                 <span class="playlist_title"><%= playlists[i].get('name') %></span>
-
-                <!--<img src=  playlists[i].snippet.thumbnails.default.url  alt="">
-                <span> playlists[i].snippet.description </span>
-                <ul>
-                    < for(j = 0;j < playlists[i].contentDetails.itemCount; j++) { >
-                    <li>
-                        <div>
-                            <img src= < items[j].snippet.thumbnails.default.url > alt="">
-                            <p>< items[j].snippet.title ></p>
-                        </div>
-                    </li>
-                    < } >
-                </ul>-->
-
                 <button data-id="<%= playlists[i].get('id') %>" class="importBtn btn draw-border">Import</button>
+            </div>
+            <% } %>
+            <% for(i = 0;i < imported.length; i++) { %>
+            <div class="playlist_block">
+                <span class="playlist_title"><%= imported[i].get('name') %></span>
+                <span class="playlist_status">Imported</span>
             </div>
             <% } %>
         </div>
@@ -36,6 +31,12 @@
         </div>
     </div>
 </div>
+<% } else { %>
+<h1>Please <a href="/auth/google">Login</a></h1>
+<script>
+  $("#login-out").attr("href", "/auth/google").html("Login");
+</script>
+<% } %>
 <script>
   $(".importBtn").each(function () {
     $(this).on("click", function (e) {
@@ -47,6 +48,7 @@
       })
     })
   });
+
   $(".buyBtn").each(function () {
     $(this).on("click", function (e) {
       e.preventDefault();
@@ -54,8 +56,9 @@
         url: "/buy",
         type: "get",
         data: {"playlistId": $(this).attr("data-id")}
+      }).success(function () {
+        alert("ASd");
       })
     })
   })
-
 </script>

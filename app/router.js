@@ -1,36 +1,50 @@
+'use strict';
+
+const Koa = require('koa');
 const Router = require('koa-router');
+
 const passport = require('./auth');
 const config = require('../config/config');
-const Koa = require('koa');
+const sequelize = require('./database/db.js');
+const pay = require('./payments');
 const YoutubeAPI = require('./youtube.js');
-var {User, Playlist, Order, Forsale} = require("./database/models.js");
+const {User, Playlist, Order, Forsale} = require("./database/models.js");
+
 let router = new Router();
 let app = new Koa();
 
 router.get('/', async function (ctx) {
-  await ctx.render("main", {});
-
-});
-
-router.get('/home', async function (ctx) {
-  await ctx.render("home", {});
-
+  await ctx.render("main", {isAuth: ctx.isAuthenticated()});
 });
 
 router.get('/user-config', async function (ctx) {
+  if (typeof(ctx.state.user) === "undefined") {
+    await ctx.render("user-config", {
+      name: [],
+      img: [],
+      isAuth: ctx.isAuthenticated()
+    });
+    return;
+  }
   let users = await User.findOne({
     where: {
       id: ctx.state.user.id
     }
   });
-  await ctx.render("user-config", {name: users.get("displayName"),img: users.get("img")});
+  await ctx.render("user-config", {
+    name: users.get("displayName"),
+    img: users.get("img"),
+    isAuth: ctx.isAuthenticated()
+  });
 
 });
-router.get("/userConfig", async function(ctx){
-  if(ctx.request.query["ilpId"]) {
+
+router.get("/userConfig", async function (ctx) {
+  if (ctx.request.query["ilpId"]) {
     await User.update(
       {
-        ilpId: ctx.request.query["ilpId"]
+        ilpId: ctx.request.query["ilpId"],
+        ilpPass: ctx.request.query["ilpPass"]
       },
       {
         where: {
@@ -40,27 +54,62 @@ router.get("/userConfig", async function(ctx){
   }
 });
 
-router.get('/playlist', async function (ctx) {
+router.get('/dashboard', async function (ctx) {
   // const newPlaylist = await yapi.insertPlaylist(playlists.items[0].title, playlists.items[0].description);
+  if (typeof(ctx.state.user) === "undefined") {
+    await ctx.render("list", {playlists: [], forSale: [], isAuth: false});
+    return;
+  }
   let myPlaylists = await Playlist.findAll({
     where: {
       userId: ctx.state.user.id,
-      status: {
-        $ne: "purchased"
-      }
+      status: "none"
     }
   });
+
+  let imported = await Playlist.findAll({
+    where: {
+      userId: ctx.state.user.id,
+      status: "forSale"
+    }
+  });
+
+  const where = {
+    userId: {
+      $ne: ctx.state.user.id
+    },
+    status: {
+      $ne: "purchased"
+    }
+  };
+  where['$' + Playlist.associations.Order.as + '.userId$'] = null;
+
+  const includes = [
+    {
+      model: Forsale,
+      required: true
+    },
+    {
+      model: Order,
+      as: Playlist.associations.Order.as,
+      where: {
+        userId: ctx.state.user.id,
+      },
+      required: false
+    }
+  ];
 
   let forSale = await Playlist.findAll({
-    include: [{model: Forsale, required: true}],
-    where: {
-      userId: {
-        $ne: ctx.state.user.id
-      }
-    }
+    include: includes,
+    where: where
   });
 
-  await ctx.render("list", {playlists: myPlaylists, forSale: forSale});
+  await ctx.render("list", {
+    playlists: myPlaylists,
+    imported: imported,
+    forSale: forSale,
+    isAuth: ctx.isAuthenticated()
+  });
 });
 
 router.get('/sync', async function (ctx) {
@@ -91,7 +140,7 @@ router.get('/import', async function (ctx) {
 
   const playlistItems = await yapi.getPlaylistItems(playlist.yId);
 
-  let videos = "";
+  let videos = '';
   for (let i = 0; i < playlistItems.items.length; i++) {
     videos += playlistItems.items[i].contentDetails.videoId + ";";
   }
@@ -114,21 +163,44 @@ router.get('/import', async function (ctx) {
 });
 
 router.get('/buy', async function (ctx) {
-  await Order.create({
-    orderIp: 19216811
-  });
+  const playlistId = parseInt(ctx.request.query['playlistId']);
+
   let myPlaylist = await Playlist.findOne({
     where: {
-      id: ctx.request.query['playlistId']
+      id: playlistId
     }
   });
-  let yapi = new YoutubeAPI(config.google.clientID, config.google.clientSecret, config.google.callbackURL, ctx.state.user.accessToken, ctx.state.user.refresh_token);
+
+  let sellerUser = await User.findById(myPlaylist.get('userId'));
+
+  await pay(
+    ctx.state.user.get('ilpId'),
+    ctx.state.user.get('ilpPass'),
+    sellerUser.get('ilpId'),
+    1,
+    'Payment for youtube playlist: ' + myPlaylist.get('name')
+  );
+
+  await Order.create({
+    playlistId: playlistId,
+    userId: ctx.state.user.id,
+    orderIp: ctx.ip
+  });
+
+  let yapi = new YoutubeAPI(
+    config.google.clientID,
+    config.google.clientSecret,
+    config.google.callbackURL,
+    ctx.state.user.accessToken,
+    ctx.state.user.refresh_token);
+
   const newPlaylist = await yapi.insertPlaylist(myPlaylist.name);
   let videos = myPlaylist.videos.split(";");
   videos.pop();
   for (let i = 0; i < videos.length; i++) {
     let insertVideo = await yapi.insertVideo(newPlaylist.id, videos[i]);
   }
+
   await Playlist.create({
     yId: newPlaylist.id,
     userId: ctx.state.user.id,

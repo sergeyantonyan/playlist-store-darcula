@@ -51,7 +51,7 @@ var YoutubeAPI = function (clientID, clientSecret, redirectURL, accsesToken, ref
           return reject(err);
         }
         if (data) {
-         // console.log(data);
+          // console.log(data);
           return resolve(data);
         }
       })
@@ -111,6 +111,5 @@ var YoutubeAPI = function (clientID, clientSecret, redirectURL, accsesToken, ref
     })
   };
 };
-
 
 module.exports = YoutubeAPI;
