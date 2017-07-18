@@ -45,7 +45,10 @@
         url: "/import",
         type: "get",
         data: {"playlistId": $(this).attr("data-id")}
-      })
+      }).success(function(){
+        $(this).html('<span class="playlist_status">Imported</span>');
+      });
+
     })
   });
 
