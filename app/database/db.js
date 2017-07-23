@@ -2,7 +2,7 @@
 
 const Sequelize = require("sequelize");
 
-const sequelize = new Sequelize('darcula', 'root', '', {
+const sequelize = new Sequelize('darcula', 'root', 'usbw', {
   host: 'localhost',
   dialect: 'mysql'
 });

@@ -125,7 +125,9 @@
     float: right;
     letter-spacing: 0.05rem;
 }
-
+.btn:disabled{
+    cursor: progress !important;
+}
 .btn:focus {
     outline: 2px dotted #55d7dc;
 }
