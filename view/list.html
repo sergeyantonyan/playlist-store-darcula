@@ -1,7 +1,7 @@
 <p class="d-flex justify-content-center">If you like to listen to music you are in the rigth place!!</p>
 <% if(isAuth) { %>
 <script>
-    $("#login-out").attr("href", "/logout").html("Logout");
+  $("#login-out").attr("href", "/logout").html("Logout");
 </script>
 <div class="container">
     <div id="myContainer">
@@ -19,19 +19,13 @@
                 <span class="playlist_status">Imported</span>
             </div>
             <% } %>
-            <% for(i = 0;i < purchased.length; i++) { %>
-            <div class="playlist_block">
-                <span class="playlist_title"><%= purchased[i].get('name') %></span>
-                <span class="playlist_status">Bought</span>
-            </div>
-            <% } %>
         </div>
         <div id="playlistContainer2">
             <h2 class="pl_name"><b>Playlists for sale</b></h2>
             <% for(i = 0;i < forSale.length; i++) { %>
             <div class="playlist_block">
                 <span class="playlist_title"><%= forSale[i].get('name') %></span>
-                <button data-id="<%= forSale[i].get('id') %>" class="buyBtn btn draw-border">Buy</button>
+                <button data-id="<%= forSale[i].get('id') %>" id="buy" class="buyBtn btn draw-border">Buy</button>
             </div>
             <% } %>
         </div>
@@ -40,53 +34,31 @@
 <% } else { %>
 <h1>Please <a href="/auth/google">Login</a></h1>
 <script>
-    $("#login-out").attr("href", "/auth/google").html("Login");
+  $("#login-out").attr("href", "/auth/google").html("Login");
 </script>
 <% } %>
 <script>
-    $(".importBtn").each(function () {
-        $(this).on("click", function (e) {
-            const self = $(this);
-            const selfParent = $(this).parent();
-            self.attr("disabled","true");
-            e.preventDefault();
-            $.ajax({
-                url: "/import",
-                type: "get",
-                data: {"playlistId": $(this).attr("data-id")},
-                success: function () {
-                    self.remove();
-                    selfParent.append("<span class='playlist_status'>Imported</span>");
-                }
-            })
-        })
-    });
-
-    $(".buyBtn").each(function () {
-        $(this).on("click", function (e) {
-            const selfName = $(this).siblings()[0].innerHTML;
-            const selfParent = $(this).parent();
-            $(this).attr("disabled","true");
-            e.preventDefault();
-            $.ajax({
-                url: "/buy",
-                type: "get",
-                data: {"playlistId": $(this).attr("data-id")},
-                success: (function () {
-                    const plContainer = $("#playlistContainer");
-                    const plBlock = document.createElement("div");
-                    const plBlockChildes = [document.createElement("span"),document.createElement("span")];
-                    plBlockChildes[0].className = "playlist_title";
-                    plBlockChildes[0].textContent = selfName;
-                    plBlockChildes[1].className = "playlist_status";
-                    plBlockChildes[1].textContent = "Bought";
-                    plBlock.className = "playlist_block";
-                    plBlock.append(plBlockChildes[0]);
-                    plBlock.append(plBlockChildes[1]);
-                    selfParent.remove();
-                    plContainer.append(plBlock);
-                })
-            });
-        })
+  $(".importBtn").each(function () {
+    $(this).on("click", function (e) {
+      e.preventDefault();
+      $.ajax({
+        url: "/import",
+        type: "get",
+        data: {"playlistId": $(this).attr("data-id")}
+      });
     })
+  });
+
+  $(".buyBtn").each(function () {
+    $(this).on("click", function (e) {
+      e.preventDefault();
+      $.ajax({
+        url: "/buy",
+        type: "get",
+        data: {"playlistId": $(this).attr("data-id")}
+      }).success(function () {
+        alert("ASd");
+      })
+    })
+  })
 </script>

@@ -10,7 +10,14 @@ const config = {
     accessType: 'offline',
     scope: ['https://www.googleapis.com/auth/userinfo.profile', 'https://www.googleapis.com/auth/youtube'],
     approvalPrompt: 'force'
-  }
+  },
+  db:{
+    host: "localhost",
+    username: "root",
+    password: "",
+    database: "darcula"
+  },
+  ilp: 'ilp.tumo.org'
 }
 
 module.exports = config;
